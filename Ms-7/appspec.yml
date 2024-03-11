@@ -1,0 +1,30 @@
+version: 0.0
+os: linux
+files:
+  - source: .
+    destination: /home/ubuntu/newsapp
+
+# permissions:
+#   - object: /home/ubuntu/newsapp/scripts/before_install.sh
+#     owner: root
+#     mode: 755
+#     type:
+#       - file
+#   - object: /home/ubuntu/newsapp/scripts/install_dependencies.sh
+#     owner: root
+#     mode: 755
+#     type:
+#       - file
+#   - object: /home/ubuntu/newsapp/scripts/start_app.sh
+#     owner: root
+#     mode: 755
+#     type:
+#       - file
+
+hooks:
+  BeforeInstall:
+    - location: scripts/before_install.sh
+  AfterInstall:
+    - location: scripts/install_dependencies.sh
+  ApplicationStart:
+    - location: scripts/start_app.sh

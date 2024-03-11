@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}
+Detail
+{% endblock %}
+
+{% block content %}
+
+<div class="master_wrapper">
+    <div class="first_wrapper">
+    <div style="text-align: center;">
+        <a href="{% url 'branchview' %}" class="ptag_color"><strong>TOPICS</strong></a>
+        </div>
+      <div class="list_wrapper">
+          {% for topic in topics%}
+        <div class="item_wrapper">
+          <img src="/static/images/svg/{{topic.title}}.svg" />
+          <a href="{% url 'branchview' %}?topic={{topic.id}}" class="ptag_color"><p>{{topic.title}}</p></a>
+        </div>
+        {%endfor%}
+      </div>
+    </div>
+    <div class="second_wrapper">
+        <div class="card_wrapper">
+        <div class="avatar">
+          <div class="avatar_detail">
+            <div class="avatar-div">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" id="avatar"><path d="M24 8c-4.42 0-8 3.58-8 8 0 4.41 3.58 8 8 8s8-3.59 8-8c0-4.42-3.58-8-8-8zm0 20c-5.33 0-16 2.67-16 8v4h32v-4c0-5.33-10.67-8-16-8z"></path><path fill="none" d="M0 0h48v48H0z"></path></svg>
+            </div>
+            <p class="text">{{branch.username}}</p>
+            <p class="timestamp">{{branch.created_at}}</p>
+          </div>
+        </div>
+        <p class="main_text">
+          {{branch.heading}}
+        </p>
+        <span class="small_circle" style="padding-inline: 16px;">{{branch.topicname}}</span>
+        <p style="margin-bottom:12px ; margin-top:12px ;">
+            {{branch.content}}
+        </p>
+
+        <img
+          src="{{branch.picture}}"
+          class="center_image"
+          width="592px"
+          height="338px"
+        />
+
+        <div class="sort_Wrapper" style="max-width: 229px;">
+          <label for="cars">Sort By:</label>
+          <select name="cars" id="leafsort" onchange="sort_leaf('{{branch.id}}','{{request.user.id}}')">
+            <option value="-count_diff">Voting</option>
+            <option value="-created_at">Post</option>
+          </select>
+        </div>
+
+        <div class="comment_wrapper" style="padding-inline: 12px; max-width: 200px; margin-bottom: 14px;">
+          <img src="{%static 'images/svg/add.svg'%}" />
+          <p class="comment_text" onclick="showbranchReplySection('{{branch.id}}')">Add a Comment</p>
+        </div>
+        <div class="reply-section" id="branchreplyarea{{branch.id}}" style="margin-bottom:16px;">  
+            <textarea
+              id="branchReplyTextarea{{branch.id}}"
+              placeholder="Write your reply..."
+            ></textarea>
+            <div class="reply-buttons">
+              <button onclick="postleaf('{{branch.id}}','{{request.user.id}}')">Reply</button>
+              <button onclick="hidebranchReplySection('{{branch.id}}')">Cancel</button>
+            </div>
+        </div>
+        <div class="btn_options" >
+          <div class="vote_options">
+            <a href="javascript:void(0)" class="ptag_color" id="vote_branch{{branch.id}}" onclick="Voting(true,'branch','{{branch.id}}')">
+                <svg rpl=""
+                {% if branch.user_vote == True %} 
+                fill="blue"
+                {%else%}
+                fill="currentColor"
+                {%endif%} 
+                height="16" icon-name="upvote-outline" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg"> <!--?lit$7319853$--><!--?lit$7319853$--><path d="M12.877 19H7.123A1.125 1.125 0 0 1 6 17.877V11H2.126a1.114 1.114 0 0 1-1.007-.7 1.249 1.249 0 0 1 .171-1.343L9.166.368a1.128 1.128 0 0 1 1.668.004l7.872 8.581a1.25 1.25 0 0 1 .176 1.348 1.113 1.113 0 0 1-1.005.7H14v6.877A1.125 1.125 0 0 1 12.877 19ZM7.25 17.75h5.5v-8h4.934L10 1.31 2.258 9.75H7.25v8ZM2.227 9.784l-.012.016c.01-.006.014-.01.012-.016Z"></path><!--?--> </svg>
+              </a>
+              <p style="margin: 0%;" id="vote_count_branch{{branch.id}}">{{branch.count_diff}}</p>
+              <a href="javascript:void(0)" class="ptag_color" id="devote_branch{{branch.id}}" onclick="Voting(false,'branch','{{branch.id}}')">
+                <svg rpl=""
+                {% if branch.user_vote == False %} 
+                fill="red"
+                {%else%}
+                fill="currentColor"
+                {%endif%}
+                height="16" icon-name="downvote-outline" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg"> <!--?lit$7319853$--><!--?lit$7319853$--><path d="M10 20a1.122 1.122 0 0 1-.834-.372l-7.872-8.581A1.251 1.251 0 0 1 1.118 9.7 1.114 1.114 0 0 1 2.123 9H6V2.123A1.125 1.125 0 0 1 7.123 1h5.754A1.125 1.125 0 0 1 14 2.123V9h3.874a1.114 1.114 0 0 1 1.007.7 1.25 1.25 0 0 1-.171 1.345l-7.876 8.589A1.128 1.128 0 0 1 10 20Zm-7.684-9.75L10 18.69l7.741-8.44H12.75v-8h-5.5v8H2.316Zm15.469-.05c-.01 0-.014.007-.012.013l.012-.013Z"></path><!--?--> </svg>            
+            </a>
+          </div>
+          <div class="message_options">
+            <img src="{%static 'images/svg/message.svg'%}" width="16px" height="16px" />
+          <a href="javascript:void(0)" class="ptag_color"><p style="margin: 0%;" id="branchleafcount">{{branch.leaf_count}}</p></a>
+          </div>
+          <div class="message_options">
+            <img src="{%static 'images/svg/share.svg'%}" width="16px" height="16px" />
+          <a href="javascript:void(0)" class="ptag_color" onclick="textcopied('branch/detail/{{branch.id}}/')"><p style="margin: 0%;">Share</p></a>
+          </div>
+          {% if branch.user == request.user.id %}
+            <div class="message_options dropdown_icon" onclick="toggleDropdown('{{branch.id}}')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
+                    <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
+                </svg>
+                <div class="dropdown_menu" style="display: none" id="threedotdropdown{{branch.id}}">
+                    <p onclick="deleteBranch('{{branch.id}}')">Delete</p>
+                </div>
+            </div>
+        {%endif%}
+        </div>
+        <div id="leafofbranch{{branch.id}}">
+        {% for leaf in leaves %}
+        <!-- <div class="main-comment-wrap" id="leaf_{{leaf.id}}"> -->
+        <div class="padding-left12 heavy-text" id="leaf_{{leaf.id}}">
+          <div class="avatar-wrap">
+            <div class="avatar-div">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" id="avatar"><path d="M24 8c-4.42 0-8 3.58-8 8 0 4.41 3.58 8 8 8s8-3.59 8-8c0-4.42-3.58-8-8-8zm0 20c-5.33 0-16 2.67-16 8v4h32v-4c0-5.33-10.67-8-16-8z"></path><path fill="none" d="M0 0h48v48H0z"></path></svg>
+            </div>
+            <p class="text">{{leaf.username}}</p>
+            <p class="light-text timestamp">{{leaf.created_at}}</p>
+          </div>
+          <p class="padding-left12 heavy-text" id="leafcontent{{leaf.id}}" >
+            {{leaf.content}}
+          </p>
+          <div class="votes_wrap padding-left12">
+            <div class="flex">
+            <a href="javascript:void(0)" class="ptag_color" id="vote_leaf{{leaf.id}}" onclick="Voting(true,'leaf','{{leaf.id}}')">
+                <svg rpl="" 
+                {% if leaf.user_vote == True %} 
+                fill="blue"
+                {%else%}
+                fill="currentColor"
+                {%endif%}
+                height="16" icon-name="upvote-outline" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg"> <!--?lit$7319853$--><!--?lit$7319853$--><path d="M12.877 19H7.123A1.125 1.125 0 0 1 6 17.877V11H2.126a1.114 1.114 0 0 1-1.007-.7 1.249 1.249 0 0 1 .171-1.343L9.166.368a1.128 1.128 0 0 1 1.668.004l7.872 8.581a1.25 1.25 0 0 1 .176 1.348 1.113 1.113 0 0 1-1.005.7H14v6.877A1.125 1.125 0 0 1 12.877 19ZM7.25 17.75h5.5v-8h4.934L10 1.31 2.258 9.75H7.25v8ZM2.227 9.784l-.012.016c.01-.006.014-.01.012-.016Z"></path><!--?--> </svg>
+            </a>
+                <p style="margin: 0%;" id="vote_count_leaf{{leaf.id}}">{{leaf.count_diff}}</p>
+            <a href="javascript:void(0)" class="ptag_color" id="devote_leaf{{leaf.id}}" onclick="Voting(false,'leaf','{{leaf.id}}')">
+              <svg rpl="" 
+              {% if leaf.user_vote == False %} 
+              fill="red"
+              {%else%}
+              fill="currentColor"
+              {%endif%}
+              height="16" icon-name="downvote-outline" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg"> <!--?lit$7319853$--><!--?lit$7319853$--><path d="M10 20a1.122 1.122 0 0 1-.834-.372l-7.872-8.581A1.251 1.251 0 0 1 1.118 9.7 1.114 1.114 0 0 1 2.123 9H6V2.123A1.125 1.125 0 0 1 7.123 1h5.754A1.125 1.125 0 0 1 14 2.123V9h3.874a1.114 1.114 0 0 1 1.007.7 1.25 1.25 0 0 1-.171 1.345l-7.876 8.589A1.128 1.128 0 0 1 10 20Zm-7.684-9.75L10 18.69l7.741-8.44H12.75v-8h-5.5v8H2.316Zm15.469-.05c-.01 0-.014.007-.012.013l.012-.013Z"></path><!--?--> </svg>
+            </a>
+            </div>
+            <div class="flex">
+              <img
+                src="{%static 'images/svg/message.svg'%}"
+                width="16px"
+                height="16px"
+              />
+              <a class="ptag_color" onclick="showReplySection('{{leaf.id}}')"><p>Reply</p></a>
+            </div>
+
+            <div class="flex">
+              <img
+                src="{%static 'images/svg/share.svg'%}"
+                width="16px"
+                height="16px"
+              />
+              <p onclick="textcopied('branch/detail/{{branch.id}}/?leaf={{leaf.id}}')">Share</p>
+            </div>
+            {% if leaf.user == request.user.id %}
+            <div class="dropdown_icon" onclick="toggleDropdown('{{leaf.id}}')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
+                    <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
+                </svg>
+                <div class="dropdown_menu" style="display: none" id="threedotdropdown{{leaf.id}}">
+                    <p onclick="deleteleaf('{{leaf.id}}')">Delete</p>
+                </div>
+            </div>
+            {%endif%}
+            {% if leaf.subleaf_count%}
+            <div id="repliesleaf{{leaf.id}}">
+                <a onclick="sub_leaf('{{leaf.id}}','{{branch.id}}','{{request.user.id}}')">
+                    {{leaf.subleaf_count}} replies
+                </a>
+            </div>
+            {%endif%}
+          </div>
+          <div class="reply-section" id="leafreplyarea{{leaf.id}}">  
+            <textarea
+              id="leafReplyTextarea{{leaf.id}}"
+              placeholder="Write your reply..."
+            ></textarea>
+            <div class="reply-buttons" >
+              <button onclick="postReply('{{leaf.id}}','{{branch.id}}','{{request.user.id}}')">Reply</button>
+              <button onclick="hideReplySection('{{leaf.id}}')">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        {%endfor%}
+      </div>
+    </div>
+    </div>
+</div>
+
+
+{% endblock %}
